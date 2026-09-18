@@ -1,0 +1,169 @@
+# Прайс-листы для раздела «Стоимость обработки лекции».
+#
+# Этот файл — ДАННЫЕ, а не параметры алгоритма: цифры устаревают, поэтому у
+# каждой строки есть `source` и `checked`. Обновить цену = поправить здесь,
+# пересчитать таблицы = `python scripts/cost_report.py`.
+#
+# Единицы измерения зафиксированы в имени поля, чтобы их нельзя было перепутать:
+#   *_per_mtok  — доллары за миллион токенов
+#   *_per_hour  — доллары за час аудио/видео
+#   *_per_month — доллары за месяц подписки за одного пользователя
+
+meta:
+  currency: USD
+  checked: "2026-09-17"
+  note: >
+    Цены публичные, без корпоративных скидок и без налогов. Для подписочных
+    сервисов стоимость одной лекции считается как месячная цена, делённая на
+    месячный лимит минут (для тарифов без лимита — на 40 часов в месяц, это
+    типичная учебная нагрузка в один-два курса).
+
+# --------------------------------------------------------------------------- #
+# Модели, которыми пользуется сам bropilot
+# --------------------------------------------------------------------------- #
+
+llm:
+  source: "https://claude.com/pricing"
+  checked: "2026-09-17"
+  models:
+    claude-opus-5:
+      input_per_mtok: 5.00
+      output_per_mtok: 25.00
+    claude-sonnet-5:
+      input_per_mtok: 3.00
+      output_per_mtok: 15.00
+    claude-haiku-4-5:
+      input_per_mtok: 1.00
+      output_per_mtok: 5.00
+
+# --------------------------------------------------------------------------- #
+# Распознавание речи: чем платит тот, кто не считает локально
+# --------------------------------------------------------------------------- #
+
+asr:
+  local_faster_whisper:
+    title: "faster-whisper на своём ноутбуке (вариант bropilot)"
+    price_per_hour: 0.0
+    source: "локальный расчёт, платы за API нет"
+    checked: "2026-09-17"
+    note: "Денежная стоимость нулевая; расплата — время процессора, см. замеры."
+  openai_gpt4o_transcribe:
+    title: "OpenAI gpt-4o-transcribe / whisper-1"
+    price_per_hour: 0.36            # $0.006 за минуту
+    source: "https://platform.openai.com/docs/pricing"
+    checked: "2026-09-17"
+  openai_gpt4o_mini_transcribe:
+    title: "OpenAI gpt-4o-mini-transcribe"
+    price_per_hour: 0.18            # $0.003 за минуту
+    source: "https://platform.openai.com/docs/pricing"
+    checked: "2026-09-17"
+  assemblyai_universal:
+    title: "AssemblyAI Universal (async)"
+    price_per_hour: 0.15
+    source: "https://www.assemblyai.com/pricing"
+    checked: "2026-09-17"
+  deepgram_nova3:
+    title: "Deepgram Nova-3 (pre-recorded)"
+    price_per_hour: 0.258
+    source: "https://deepgram.com/pricing"
+    checked: "2026-09-17"
+
+# --------------------------------------------------------------------------- #
+# Аналоги целиком (таблица сравнения в отчёте)
+# --------------------------------------------------------------------------- #
+
+analogs:
+  - key: bropilot_sonnet
+    title: "bropilot (Claude Sonnet 5)"
+    model: "pay-per-use"
+    reads_board: true
+    latex: true
+    russian: true
+    note: "Цена считается по фактическому расходу токенов, см. таблицу замеров."
+
+  - key: notebooklm_free
+    title: "NotebookLM / Gemini Notebook, бесплатный тариф"
+    model: "subscription"
+    price_per_month: 0.0
+    included_hours_per_month: null
+    quota_note: "50 вопросов в день, 50 источников на блокнот"
+    reads_board: false
+    latex: false
+    russian: true
+    source: "https://notebook.google.com"
+    checked: "2026-09-17"
+    note: >
+      Видео с YouTube подключается как источник, но в обработку идёт только
+      текстовая расшифровка ролика: записи с доски в источник не попадают.
+
+  - key: notebooklm_pro
+    title: "NotebookLM в составе Google AI Pro"
+    model: "subscription"
+    price_per_month: 19.99
+    included_hours_per_month: null
+    quota_note: "300 источников на блокнот, повышенные дневные лимиты"
+    reads_board: false
+    latex: false
+    russian: true
+    source: "https://one.google.com/about/plans"
+    checked: "2026-09-17"
+
+  - key: otter_pro
+    title: "Otter.ai Pro"
+    model: "subscription"
+    price_per_month: 16.99
+    price_per_month_annual: 8.33
+    included_hours_per_month: 20.0   # 1200 минут
+    quota_note: "1200 минут в месяц, до 90 минут на запись"
+    reads_board: false
+    latex: false
+    russian: false
+    source: "https://otter.ai/pricing"
+    checked: "2026-09-17"
+
+  - key: otter_business
+    title: "Otter.ai Business"
+    model: "subscription"
+    price_per_month: 30.0
+    price_per_month_annual: 19.99
+    included_hours_per_month: null
+    quota_note: "без лимита записей, минимум 5 мест"
+    reads_board: false
+    latex: false
+    russian: false
+    source: "https://otter.ai/pricing"
+    checked: "2026-09-17"
+
+  - key: mathpix_api
+    title: "Mathpix Convert API"
+    model: "per-page"
+    price_per_page: 0.005
+    setup_fee: 19.99
+    quota_note: "$0.005 за страницу PDF, $0.002 за изображение"
+    reads_board: true
+    latex: true
+    russian: null
+    source: "https://mathpix.com/pricing/api"
+    checked: "2026-09-17"
+    note: >
+      Работает с отдельными изображениями и документами, не с видео: речь и
+      время в записи не учитываются. В сравнении по цене засчитывается как
+      распознавание кадров доски (по одному вызову на кадр).
+
+  - key: lecture2notes
+    title: "lecture2notes"
+    model: "self-hosted"
+    price_per_month: 0.0
+    quota_note: "открытый код, локальный запуск"
+    reads_board: true
+    latex: false
+    russian: null
+    source: "https://github.com/HHousen/lecture2notes"
+    checked: "2026-09-17"
+    note: "Ориентирован на слайды; формулы в LaTeX не восстанавливаются."
+
+# Сколько часов лекций в месяц слушает студент — этим числом подписка
+# пересчитывается в цену одной лекции.
+workload:
+  hours_per_month: 40.0
+  reference_lecture_minutes: 80.0

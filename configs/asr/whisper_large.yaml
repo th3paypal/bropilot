@@ -1,0 +1,31 @@
+# faster-whisper (CTranslate2). `large-v3` is the quality baseline; switch to
+# `medium` with compute_type=int8 to run the whole pipeline on CPU.
+model: large-v3
+device: cuda            # cuda | cpu | auto
+compute_type: float16   # float16 on GPU, int8 on CPU
+language: ru
+beam_size: 5
+
+# Whisper's own VAD removes long silences before decoding, which is both faster
+# and the single most effective hallucination guard on lecture audio.
+vad_filter: true
+min_silence_ms: 700
+condition_on_previous_text: false   # stops error cascades on 2-hour audio
+
+# Domain priming: nudges the decoder toward the right spelling of jargon.
+initial_prompt: >
+  Лекция по машинному обучению. Термины: градиентный спуск, регуляризация,
+  переобучение, функция потерь, решающее дерево, бустинг, кросс-валидация,
+  логистическая регрессия, метод опорных векторов, ядро, признак, выборка.
+
+# Segment filtering. The first two work as a PAIR (both must hold to call a
+# segment silence), exactly as in Whisper itself; see `asr.rejection_reason`.
+max_no_speech: 0.6
+min_avg_logprob: -1.0
+# Independent guard against outright garbage.
+hard_min_logprob: -1.6
+
+# Re-chunking of raw segments into phrase groups.
+group_pause: 1.2          # seconds of silence that always ends a group
+group_min_seconds: 12.0   # a sentence end only splits after this much material
+group_max_seconds: 45.0   # hard cap on group length

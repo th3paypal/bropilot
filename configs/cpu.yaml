@@ -1,0 +1,77 @@
+# Same as default.yaml but with CPU speech recognition: `bropilot --config cpu run ...`
+# merged in before this file, so anything set below overrides the group default.
+defaults:
+  asr: whisper_cpu
+  vision: tablet
+  llm: anthropic
+  compose: lecture_notes
+
+paths:
+  workdir: ./runs
+
+# Re-run every stage even when a cache snapshot exists.
+force: false
+
+course:
+  # Used only as prompt context: helps the models pick the right notation.
+  name: "Машинное обучение"
+  language: ru
+
+ingest:
+  sample_rate: 16000
+  # Cap the resolution: handwriting stays legible at 720p and download time halves.
+  ytdlp_format: "bestvideo[height<=720]+bestaudio/best[height<=720]"
+
+ocr:
+  max_tokens: 4000
+  temperature: 0.0            # transcription, not writing: no sampling noise
+  context_seconds: 45.0       # speech window fed alongside the frame
+  context_words: 220
+  keep_confidence: 0.35       # frames below this and with no LaTeX are dropped
+  system: >
+    Ты аккуратно переносишь содержимое кадра лекции в LaTeX. Ты не добавляешь
+    ничего, чего нет на изображении, и не исправляешь лектора. Ответ — только
+    валидный JSON.
+
+segmentation:
+  encoder: tfidf              # tfidf | sentence-transformers
+  encoder_model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  tfidf_max_features: 40000
+  cohesion_window: 6          # utterances on each side of a candidate boundary
+  w_visual: 0.6               # weight of the board-state prior
+  w_lexical: 0.4              # weight of the lexical-cohesion depth
+  visual_sigma: 20.0          # seconds; width of the prior around a board onset
+  min_score: 0.25             # below this a gap is never a boundary
+  min_seconds: 150            # no two boundaries closer than this
+  max_seconds: 900            # anything longer is force-split
+
+retrieval:
+  chunk_words: 220
+  chunk_overlap: 40
+  top_k: 6
+  neighbour_radius: 1
+  max_context_chunks: 12
+  min_score: 0.05
+  citation_tolerance: 180.0   # seconds of slack when verifying a cited timecode
+  use_dense: false
+  dense_model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  dense_weight: 0.5
+
+qa:
+  max_tokens: 2000
+  temperature: 0.1
+  system: >
+    Ты — ассистент по конкретной лекции. Отвечаешь строго по предоставленным
+    фрагментам, всегда указываешь метки времени, никогда не додумываешь.
+
+quiz:
+  max_tokens: 4000
+  temperature: 0.6
+  chunks_per_group: 4
+  max_words_per_chunk: 400
+  system: >
+    Ты составляешь вопросы на понимание материала лекции. Вопросы проверяют
+    понимание, а не память на слова: варианты ответов правдоподобны и однородны.
+
+logging:
+  level: INFO

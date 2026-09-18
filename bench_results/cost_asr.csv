@@ -1,0 +1,6 @@
+сервис,"за час аудио, $","за лекцию 80 мин, $",проверено
+faster-whisper на своём ноутбуке (вариант bropilot),0,0,2026-09-17
+OpenAI gpt-4o-transcribe / whisper-1,0.36,0.48,2026-09-17
+OpenAI gpt-4o-mini-transcribe,0.18,0.24,2026-09-17
+AssemblyAI Universal (async),0.15,0.2,2026-09-17
+Deepgram Nova-3 (pre-recorded),0.258,0.344,2026-09-17

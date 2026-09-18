@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bropilot"
+version = "0.1.0"
+description = "Multimodal pipeline turning lecture recordings into LaTeX notes, quizzes and grounded QA"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[project.scripts]
+bropilot = "bropilot.cli:entrypoint"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

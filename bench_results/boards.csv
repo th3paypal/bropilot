@@ -1,0 +1,5 @@
+minutes,sampled_frames,states_found,states_expected,seconds,ms_per_frame,peak_mb
+2,120,4,4,0.68,5.66,19.0
+4,240,8,8,1.27,5.31,32.1
+8,480,16,16,2.64,5.51,60.3
+16,960,32,32,5.06,5.27,116.7

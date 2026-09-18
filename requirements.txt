@@ -1,0 +1,30 @@
+# core
+numpy>=1.26
+opencv-python-headless>=4.9
+pydantic>=2.6
+omegaconf>=2.3
+jinja2>=3.1
+scikit-learn>=1.4
+
+# speech
+faster-whisper>=1.0
+yt-dlp>=2024.3.10
+
+# models
+anthropic>=0.34
+
+# optional: dense retrieval and segmentation encoder
+# sentence-transformers>=2.6
+
+# dev
+pytest>=8.0
+
+# app & portability
+# horizontal containers, fragments
+streamlit>=1.50
+# bundled ffmpeg when the system has none (Windows)
+imageio-ffmpeg>=0.5
+
+# cli
+typer>=0.12
+rich>=13.7

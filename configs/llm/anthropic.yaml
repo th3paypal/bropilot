@@ -1,0 +1,11 @@
+# Two model slots: a vision-capable one for reading boards, a text one for
+# writing. They can be the same model; splitting them lets the expensive slot
+# be spent where it matters.
+vision_model: claude-sonnet-5
+text_model: claude-sonnet-5
+concurrency: 4          # parallel API calls; raise if rate limits allow
+# Claude Sonnet 5 runs adaptive thinking by default, and thinking tokens count
+# against max_tokens. The stages here are transcription and rewriting, so it is
+# switched off: cheaper, faster, and the budgets below stay meaningful.
+# Set to `adaptive` to turn it back on, or `null` to omit the field entirely.
+thinking: disabled

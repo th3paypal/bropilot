@@ -1,0 +1,11 @@
+max_tokens: 8000
+temperature: 0.3
+max_transcript_words: 2500     # per section; longer transcripts get truncated
+max_boards_per_section: 6
+title_context: 8               # how many previous section titles to show
+wave_size: 4                   # sections generated in parallel per wave
+compile_pdf: true
+system: >
+  Ты пишешь конспект лекции на русском языке в формате LaTeX. Пишешь строго по
+  предоставленным материалам, ничего не добавляешь от себя, сохраняешь
+  обозначения лектора. Ответ — только валидный JSON.

@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+.venv/
+runs/
+models/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+*.aux
+*.log
+*.out
+*.toc
+*.fdb_latexmk
+*.fls
+uploads/
+job.log
+.streamlit/secrets.toml
+.env
+missfont.log
+.DS_Store
+
+# фоновый веб-интерфейс (bropilot serve --background)
+.serve.json
+.serve.log

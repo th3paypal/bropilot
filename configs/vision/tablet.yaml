@@ -1,0 +1,21 @@
+# Tuned for a screen-capture lecture: graphics tablet or slides, no camera on
+# the board. For a hall camera pointed at a physical whiteboard, raise
+# tau_erase (hand occlusion causes spurious "removal") and the ROI padding.
+sample_step: 1.0        # seconds between sampled frames
+scale_width: 960        # masks are computed at this width; crops stay full-res
+keep_frames_in_memory: false   # true is faster but needs ~4 GB for a 2h lecture
+
+# Adaptive threshold parameters for the ink mask.
+threshold_block: 35
+threshold_offset: 12
+dilate_iters: 1         # absorbs sub-pixel jitter before differencing
+
+static_quantile: 0.985  # pixels above this volatility are excluded as UI/webcam
+roi_keep: 0.99          # share of accumulated ink the ROI must contain
+roi_pad: 12
+
+# Board-state boundaries.
+tau_erase: 0.010        # removed ink fraction that means "content destroyed"
+tau_jump: 0.060         # added ink fraction that means "new slide appeared"
+min_state_seconds: 8.0  # shorter states are merged into the previous one
+min_ink_ratio: 0.002    # states emptier than this are dropped entirely

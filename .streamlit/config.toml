@@ -1,0 +1,45 @@
+[server]
+# лекции — большие файлы; штатный лимит загрузки 200 МБ для них мал
+maxUploadSize = 4096
+headless = false
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+# Палитра спокойная и с одним акцентом: страница почти целиком — текст
+# конспекта и кадры доски, им и нужно внимание. Синий тот же, которым
+# набраны кликабельные метки времени в PDF.
+primaryColor = "#1F5FA8"
+linkColor = "#1F5FA8"
+linkUnderline = false
+baseRadius = "0.6rem"
+buttonRadius = "0.5rem"
+showWidgetBorder = true
+showSidebarBorder = true
+headingFontWeights = [600, 600, 600, 600, 600, 600]
+baseFontSize = 15
+
+[theme.light]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7FA"
+textColor = "#16202B"
+borderColor = "#E3E8EF"
+codeBackgroundColor = "#F5F7FA"
+
+[theme.light.sidebar]
+backgroundColor = "#FAFBFD"
+borderColor = "#E3E8EF"
+
+[theme.dark]
+backgroundColor = "#14181F"
+secondaryBackgroundColor = "#1C222B"
+textColor = "#E6EAF0"
+borderColor = "#2A3240"
+codeBackgroundColor = "#1C222B"
+primaryColor = "#6FA8E8"
+linkColor = "#6FA8E8"
+
+[theme.dark.sidebar]
+backgroundColor = "#11151B"
+borderColor = "#2A3240"

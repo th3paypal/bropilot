@@ -1,0 +1,4 @@
+vision_model: codex
+text_model: codex
+concurrency: 1
+thinking: null

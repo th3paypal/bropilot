@@ -200,6 +200,9 @@ def get_cfg(workdir: Path | None = None):
 
 
 def api_ready() -> bool:
+    if settings().model == "codex":
+        from bropilot.utils.codex_backend import chatgpt_ready
+        return chatgpt_ready()[0]
     return bool(os.environ.get("ANTHROPIC_API_KEY"))
 
 
@@ -247,18 +250,27 @@ def sidebar() -> None:
                     unsafe_allow_html=True)
         st.divider()
 
-        key = st.text_input("Ключ Anthropic API", value=os.environ.get("ANTHROPIC_API_KEY", ""),
-                            type="password",
-                            help="Нужен для чтения доски, конспекта, вопросов и теста.")
-        if key:
-            os.environ["ANTHROPIC_API_KEY"] = key.strip()
+        model = st.selectbox("Модель", user_settings.MODELS,
+                             index=user_settings.MODELS.index(saved.model)
+                             if saved.model in user_settings.MODELS else 0,
+                             format_func=lambda m: "ChatGPT — подписка через Codex" if m == "codex" else m)
+        if model == "codex":
+            from bropilot.utils.codex_backend import chatgpt_ready
+            ready, detail = chatgpt_ready()
+            if ready:
+                st.caption("Вход через ChatGPT выполнен. Расходуются лимиты Codex вашей подписки.")
+            else:
+                st.warning(detail)
+        else:
+            key = st.text_input("Ключ Anthropic API", value=os.environ.get("ANTHROPIC_API_KEY", ""),
+                                type="password",
+                                help="Нужен для чтения доски, конспекта, вопросов и теста.")
+            if key:
+                os.environ["ANTHROPIC_API_KEY"] = key.strip()
 
         profile = st.selectbox("Распознавание речи", list(user_settings.ASR_PROFILES),
                                index=list(user_settings.ASR_PROFILES).index(saved.asr_profile)
                                if saved.asr_profile in user_settings.ASR_PROFILES else 0)
-        model = st.selectbox("Модель Claude", user_settings.MODELS,
-                             index=user_settings.MODELS.index(saved.model)
-                             if saved.model in user_settings.MODELS else 0)
         if (profile, model) != (saved.asr_profile, saved.model):
             saved.asr_profile, saved.model = profile, model
             save_settings()
@@ -346,18 +358,19 @@ def page_new() -> None:
             st.caption(f"Копия сохраняется в `{UPLOADS.name}/`. До 4 ГБ.")
 
         only_local = st.toggle(
-            "Только локальная часть: речь и кадры доски, без обращения к API",
+            "Только локальная часть: речь и кадры доски, без запросов к модели",
             value=not api_ready(),
-            help="Полезно, чтобы заранее проверить распознавание и не тратить API.")
+            help="Полезно, чтобы заранее проверить распознавание и не тратить лимиты модели.")
 
         with st.expander("Параметры обработки", icon=":material/tune:"):
             force = st.checkbox("Пересчитать всё заново, игнорируя кеш")
-            conc = st.slider("Параллельных запросов к API", 1, 12, 4)
+            conc = st.slider("Параллельных запросов к модели", 1, 12,
+                             1 if settings().model == "codex" else 4)
             tau = st.number_input("Порог стирания доски (vision.tau_erase)", value=0.010,
                                   step=0.002, format="%.3f")
 
         if not only_local and not api_ready():
-            st.info("Для полного конспекта нужен ключ API — введите его слева "
+            st.info("Для полного конспекта настройте вход в модель слева "
                     "или включите «Только локальная часть».")
 
         disabled = source is None or (not only_local and not api_ready())
@@ -483,7 +496,7 @@ def video_panel(doc: Lecture, wd: Path) -> None:
 def tab_notes(doc: Lecture, wd: Path) -> None:
     written = [s for s in doc.segments if s.body]
     if not written:
-        st.info("Конспект ещё не сгенерирован — для этого нужен полный прогон с ключом API.")
+        st.info("Конспект ещё не сгенерирован — для этого нужен полный прогон с подключённой моделью.")
         return
 
     export_bar(doc, wd)
@@ -823,6 +836,9 @@ def tab_cost(doc: Lecture, wd: Path) -> None:
                      horizontal=True, height=220)
 
     st.markdown("##### Сколько стоила обработка")
+    if "codex" in cost.models:
+        st.info("Использована подписка ChatGPT: расходуются лимиты Codex. "
+                "Стоимость API ниже к этим вызовам не применяется.")
     if not cost.calls:
         st.info("Обращений к API в этом прогоне не было — значит, и денег он не стоил.")
     else:

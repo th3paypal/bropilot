@@ -88,6 +88,16 @@ class LlmClient:
         api_key: str | None = None,
         thinking: str | None = "disabled",
     ) -> None:
+        self._codex = None
+        if model == "codex":
+            from .codex_backend import CodexBackend
+            self._codex = CodexBackend()
+            self.model = model
+            self.max_tokens = max_tokens
+            self.concurrency = 1
+            self.usage = Usage()
+            self._lock = threading.Lock()
+            return
         from anthropic import Anthropic
 
         key = api_key or os.environ.get("ANTHROPIC_API_KEY")
@@ -115,6 +125,13 @@ class LlmClient:
         temperature: float | None = None,
         prefill: str | None = None,
     ) -> str:
+        if self._codex is not None:
+            text, usage = self._codex.complete(blocks, system=system, prefill=prefill,
+                                               max_tokens=max_tokens or self.max_tokens)
+            with self._lock:
+                self.usage.add(Usage(input_tokens=usage.get("input_tokens", 0),
+                                     output_tokens=usage.get("output_tokens", 0), calls=1))
+            return text
         content = [{"type": "text", "text": blocks}] if isinstance(blocks, str) else list(blocks)
         use_prefill = bool(prefill) and self.legacy
         if prefill and not use_prefill:

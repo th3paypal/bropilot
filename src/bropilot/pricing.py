@@ -26,6 +26,8 @@ def load_pricing(path: str | None = None) -> DictConfig:
 
 
 def model_rate(model: str, pricing: DictConfig | None = None) -> tuple[float, float]:
+    if model == "codex":
+        return 0.0, 0.0  # Subscription usage; no per-token API charge.
     pricing = pricing or load_pricing()
     entry = pricing.llm.models.get(model)
     if entry is None:

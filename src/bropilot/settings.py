@@ -17,7 +17,7 @@ ASR_PROFILES: dict[str, tuple[str, list[str]]] = {
     "Точнее — Whisper medium (CPU)": ("cpu", ["asr.model=medium"]),
     "Максимум — Whisper large-v3 (GPU)": ("default", []),
 }
-MODELS = ["claude-sonnet-5", "claude-opus-5", "claude-haiku-4-5"]
+MODELS = ["codex", "claude-sonnet-5", "claude-opus-5", "claude-haiku-4-5"]
 
 
 @dataclass

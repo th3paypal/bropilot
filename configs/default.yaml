@@ -3,7 +3,7 @@
 defaults:
   asr: whisper_large
   vision: tablet
-  llm: anthropic
+  llm: codex
   compose: lecture_notes
 
 paths:

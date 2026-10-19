@@ -149,7 +149,10 @@ def main() -> int:
         make_video(video)
 
     runs = ROOT / "runs" if args.keep else Path(tempfile.mkdtemp())
+    # The fake backend below stands in for the Anthropic client, so the run must
+    # stay on a Claude model even when the config defaults to the codex backend.
     overrides = [f"paths.workdir={runs.as_posix()}", "force=true",
+                 "llm.text_model=claude-sonnet-5", "llm.vision_model=claude-sonnet-5",
                  "vision.min_state_seconds=4", "segmentation.min_seconds=20",
                  "segmentation.max_seconds=60", "segmentation.cohesion_window=2"]
     if args.real_asr:
